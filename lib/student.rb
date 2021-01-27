@@ -4,7 +4,7 @@ class Student
 
   # Remember, you can access your database connection anywhere in this class
   #  with DB[:conn]
-attr_accessor :id, :name, :grade
+attr_accessor :name, :grade, :id
 
   def initialize(id = nil, name, grade)
     @id = id
@@ -17,7 +17,7 @@ attr_accessor :id, :name, :grade
       CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY,
         name TEXT, 
-        grade INTEGER
+        grade TEXT
       )
     SQL
 
@@ -40,10 +40,10 @@ attr_accessor :id, :name, :grade
         INSERT INTO students (name, grade)
         VALUES (?, ?)
       SQL
-    end
 
       DB[:conn].execute(sql, self.name, self.grade)
       @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0]
+    end
   end
 
   def self.create(name, grade)
@@ -59,7 +59,7 @@ attr_accessor :id, :name, :grade
   end
 
   def self.find_by_name(name)
-    sql = "SELECT * FROM students WHERE name = ?"
+    sql = "SELECT * FROM students WHERE name = ? LIMIT 1"
 
     DB[:conn].execute(sql, name).map { |row| new_from_db(row) }.first
   end
